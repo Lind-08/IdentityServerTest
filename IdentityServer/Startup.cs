@@ -46,12 +46,12 @@ namespace IdentityServer
 
             services.AddIdentityServer()
                 .AddDeveloperSigningCredential()
-                .AddTestUsers(IdentityConfig.GetUsers())
-                .AddInMemoryClients(IdentityConfig.GetClients())
-                .AddInMemoryApiResources(IdentityConfig.GetApiResources())
+                //.AddTestUsers(IdentityConfig.GetUsers())
+                //.AddInMemoryClients(IdentityConfig.GetClients())
+                //.AddInMemoryApiResources(IdentityConfig.GetApiResources())
                 .AddAspNetIdentity<ApplicationUser>()
-                .AddInMemoryIdentityResources(IdentityConfig.GetIdentityResources());
-                /*.AddConfigurationStore(options =>
+                //.AddInMemoryIdentityResources(IdentityConfig.GetIdentityResources());
+                .AddConfigurationStore(options =>
                 {
                     options.ConfigureDbContext = builder =>
                         builder.UseSqlite(ConnectionString,
@@ -65,7 +65,7 @@ namespace IdentityServer
                     };
                     options.EnableTokenCleanup = true;
                     options.TokenCleanupInterval = 30;
-                });*/
+                });
                 
         }
 
@@ -132,7 +132,7 @@ namespace IdentityServer
                 var result = userManager.CreateAsync(user, "123Kate_password");
                 userManager.AddToRoleAsync(user, "user");
             }
-            //InitializeDatabase(app);
+            InitializeDatabase(app);
             app.UseIdentityServer();
             app.UseMvc();
         }
