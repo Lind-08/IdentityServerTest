@@ -38,7 +38,7 @@ namespace IdentityServer
                 return BadRequest(ModelState);
             }
 
-            var user = new ApplicationUser { UserName = model.UserName, FirstName = model.FirstName, LastName = model.LastName, Email = model.Email };
+            var user = new ApplicationUser { UserName = model.UserName, Email = model.Email };
 
             var result = await _userManager.CreateAsync(user, model.Password);
 
@@ -52,8 +52,6 @@ namespace IdentityServer
                 }
                 await _userManager.AddToRoleAsync(user, role);
                 await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("userName", user.UserName));
-                await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("firstName", user.FirstName));
-                await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("lastName", user.LastName));
                 await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("email", user.Email));
                 await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("role", role));
 

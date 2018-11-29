@@ -32,7 +32,11 @@ namespace ThinClientApi
                 .AddAuthorization()
                 .AddJsonFormatters();
 
-            services.AddAuthentication("Bearer")
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
                 .AddIdentityServerAuthentication(options =>
                 {
                     options.Authority = Configuration["Authority"];

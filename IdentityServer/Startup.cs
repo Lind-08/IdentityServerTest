@@ -47,9 +47,11 @@ namespace IdentityServer
             services.AddIdentityServer()
                 .AddDeveloperSigningCredential()
                 .AddTestUsers(IdentityConfig.GetUsers())
+                .AddInMemoryClients(IdentityConfig.GetClients())
+                .AddInMemoryApiResources(IdentityConfig.GetApiResources())
                 .AddAspNetIdentity<ApplicationUser>()
-                .AddInMemoryIdentityResources(IdentityConfig.GetIdentityResources())
-                .AddConfigurationStore(options =>
+                .AddInMemoryIdentityResources(IdentityConfig.GetIdentityResources());
+                /*.AddConfigurationStore(options =>
                 {
                     options.ConfigureDbContext = builder =>
                         builder.UseSqlite(ConnectionString,
@@ -63,14 +65,14 @@ namespace IdentityServer
                     };
                     options.EnableTokenCleanup = true;
                     options.TokenCleanupInterval = 30;
-                });
+                });*/
                 
         }
 
         private void InitializeDatabase(IApplicationBuilder app)
         {
             using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            {
+            {    
                 serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
 
                 var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
@@ -101,30 +103,36 @@ namespace IdentityServer
                     }
                     context.SaveChanges();
                 }
-                var context1 = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                context1.Database.Migrate();
-                if (!context1.Users.Any())
-                {
-                    ApplicationUser user = new ApplicationUser
-                    {
-                        UserName = "Kate",
-                        PasswordHash = "secret".Sha256(),
-                        Id = "1"
-                    };
-                    context1.Add(user);
-                    context1.SaveChanges();
-                }
+                
             }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-            InitializeDatabase(app);
+            if (!roleManager.Roles.Any())
+            {
+                IdentityRole role = new IdentityRole
+                {
+                    Name = "user",
+                };
+                roleManager.CreateAsync(role);
+            }
+            if (!userManager.Users.Any())
+            {
+                ApplicationUser user = new ApplicationUser
+                {
+                    UserName = "Kate",
+                    Email = "kate@123.com",
+                };
+                var result = userManager.CreateAsync(user, "123Kate_password");
+                userManager.AddToRoleAsync(user, "user");
+            }
+            //InitializeDatabase(app);
             app.UseIdentityServer();
             app.UseMvc();
         }

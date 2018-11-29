@@ -6,12 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20181128193239_InitialIdentityServerApplicationDbMigration.cs" />
-    <Compile Remove="Migrations\20181128193239_InitialIdentityServerApplicationDbMigration.Designer.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Migrations\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

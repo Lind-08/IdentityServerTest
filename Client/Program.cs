@@ -48,7 +48,7 @@ namespace Client
                 ClientSecret = "another_secret",
                 Scope = "ThinClientApi",
                 UserName = "Kate",
-                Password = "secret",
+                Password = "123Kate_password",
             });
 
             if (responce.IsError)
