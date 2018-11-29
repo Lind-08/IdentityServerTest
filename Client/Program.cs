@@ -44,11 +44,11 @@ namespace Client
             var responce = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
             {
                 Address = disco.TokenEndpoint,
-                ClientId = "ro.client",
-                ClientSecret = "secret",
+                ClientId = "ro.client_with_identity",
+                ClientSecret = "another_secret",
                 Scope = "ThinClientApi",
-                UserName = "alice",
-                Password = "password",
+                UserName = "Kate",
+                Password = "secret",
             });
 
             if (responce.IsError)
