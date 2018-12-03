@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using ThinClientApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json.Linq;
+using ThinClientApi.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace ThinClientApi.Controllers
 {
@@ -14,17 +16,25 @@ namespace ThinClientApi.Controllers
     [Authorize]
     public class VersionController : ControllerBase
     {
-        // GET /version
-        [HttpGet]
-        public IActionResult Get(string version)
+        public ClientFileDbContext ClientFilesDb { get; set; } 
+
+        public VersionController(ClientFileDbContext clientFileDbContext)
         {
+            ClientFilesDb = clientFileDbContext;
+        }
+
+        // GET /version
+        [HttpGet("{version}", Name = "Check")]
+        public JsonResult CheckVersion(string version)
+        {
+            var lastFile = ClientFilesDb.ClientFiles.Last();
             Dictionary<string, string> responce;
-            if (!Client.CheckVersion(version))
+            if (!lastFile.CheckVersion(version))
             {
                 responce = new Dictionary<string, string>
                 {
-                    { "LastVersion", Client.GetLastVersion() },
-                    { "Reference", Client.GetActualReference() }
+                    { "LastVersion", lastFile.Version },
+                    { "Reference", lastFile.FileName }
                 };
             }
             else

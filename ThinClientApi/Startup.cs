@@ -13,6 +13,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
+using ThinClientApi.Data;
 
 namespace ThinClientApi
 {
@@ -28,6 +30,12 @@ namespace ThinClientApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionString = "Data Source=.\\app.db";
+            services.AddDbContext<ClientFileDbContext>(options =>
+            {
+                options.UseSqlite(connectionString);
+            });
+
             services.AddMvcCore()
                 .AddAuthorization()
                 .AddJsonFormatters();

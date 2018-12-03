@@ -28,7 +28,7 @@ namespace Client
             };
 
             client.SetBearerToken(token);
-            var responce = await client.GetStringAsync("version?version=0.9");
+            var responce = await client.GetStringAsync("version/check?version=0.9");
             "\n\nResponce:".ConsoleGreen();
             Console.WriteLine(JObject.Parse(responce));
         }
