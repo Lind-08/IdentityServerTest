@@ -25,7 +25,7 @@ namespace ThinClientApi.Controllers
 
         // GET /version
         [HttpGet("{version}", Name = "Check")]
-        public JsonResult CheckVersion(string version)
+        public IActionResult CheckVersion(string version)
         {
             var lastFile = ClientFilesDb.ClientFiles.Last();
             Dictionary<string, string> responce;
