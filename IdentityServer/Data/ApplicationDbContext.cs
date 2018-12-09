@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace IdentityServer.Data
 {
@@ -22,8 +23,7 @@ namespace IdentityServer.Data
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);
         }
-        public DbSet<DomainUser> DomainUsers { get; set; }
         public DbSet<Domain> Domains { get; set; }
-        public DbSet<RdpEndpoints> RdpEndpoints { get; set; }
+        //public DbSet<RdpEndpoints> RdpEndpoints { get; set; }
     }
 }

@@ -30,10 +30,14 @@ namespace ThinClientApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connectionString = "Data Source=.\\app.db";
+#if DEBUG
+            var connectionString = "Data Source=LIND-PC;Initial Catalog=ThinClientApi;Integrated Security=True";
+#elif RELEASE
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+#endif
             services.AddDbContext<ClientFileDbContext>(options =>
             {
-                options.UseSqlite(connectionString);
+                options.UseSqlServer(connectionString);
             });
 
             services.AddMvcCore()

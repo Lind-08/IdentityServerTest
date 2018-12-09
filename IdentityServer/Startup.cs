@@ -33,11 +33,14 @@ namespace IdentityServer
         {
             services.AddMvcCore();
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-            var ConnectionString = "Data Source=.\\app.db";
-
+#if DEBUG
+            var ConnectionString = "Data Source=LIND-PC;Initial Catalog=ThinClientApi;Integrated Security=True";
+#elif RELEASE
+            var ConnectionString = Configuration.GetConnectionString("DefaultConnection");
+#endif
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlite(ConnectionString);
+                options.UseSqlServer(ConnectionString);
             });
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -47,35 +50,48 @@ namespace IdentityServer
             services.AddIdentityServer()
                 .AddDeveloperSigningCredential()
                 //.AddTestUsers(IdentityConfig.GetUsers())
-                //.AddInMemoryClients(IdentityConfig.GetClients())
-                //.AddInMemoryApiResources(IdentityConfig.GetApiResources())
+                .AddInMemoryClients(IdentityConfig.GetClients())
+                .AddInMemoryApiResources(IdentityConfig.GetApiResources())
                 .AddAspNetIdentity<ApplicationUser>()
-                //.AddInMemoryIdentityResources(IdentityConfig.GetIdentityResources());
-                .AddConfigurationStore(options =>
+                .AddInMemoryIdentityResources(IdentityConfig.GetIdentityResources());
+                /*.AddConfigurationStore(options =>
                 {
                     options.ConfigureDbContext = builder =>
-                        builder.UseSqlite(ConnectionString,
+                        builder.UseSqlServer(ConnectionString,
                             sql => sql.MigrationsAssembly(migrationsAssembly));
                 })
                 .AddOperationalStore(options =>
                 {
                     options.ConfigureDbContext = builder =>
                     {
-                        builder.UseSqlite(ConnectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
+                        builder.UseSqlServer(ConnectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
                     };
                     options.EnableTokenCleanup = true;
                     options.TokenCleanupInterval = 30;
-                });
+                });*/
                 
         }
 
-        private void InitializeDatabase(IApplicationBuilder app)
+        async private void InitializeDatabase(IApplicationBuilder app)
         {
-            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            {    
-                serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
+            using (var serviceScope = app.ApplicationServices.CreateScope())
+            {
+                var services = serviceScope.ServiceProvider;
+                var userContext = services.GetRequiredService<ApplicationDbContext>();
+                userContext.Database.Migrate();
+                var domain = new Domain { Address = "WORKGROUP", Description = "Home domain" };
+                if (!userContext.Domains.Any())
+                {
+                    userContext.Domains.Add(domain);
+                    userContext.SaveChanges();
+                }
+                var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+                var rolesManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                await RoleInitializer.InitializeAsync(userManager, rolesManager, domain);
+                /*
+                services.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
 
-                var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+                var context = services.GetRequiredService<ConfigurationDbContext>();
                 context.Database.Migrate();
                 if (!context.Clients.Any())
                 {
@@ -102,8 +118,7 @@ namespace IdentityServer
                         context.ApiResources.Add(resource.ToEntity());
                     }
                     context.SaveChanges();
-                }
-                
+                }*/
             }
         }
 
@@ -114,13 +129,13 @@ namespace IdentityServer
             {
                 app.UseDeveloperExceptionPage();
             }
-            if (!roleManager.Roles.Any())
+            /*if (!roleManager.Roles.Any())
             {
                 IdentityRole role = new IdentityRole
                 {
-                    Name = "user",
+                    Name = "user"
                 };
-                roleManager.CreateAsync(role);
+                var result = roleManager.CreateAsync(role);
             }
             if (!userManager.Users.Any())
             {
@@ -130,8 +145,8 @@ namespace IdentityServer
                     Email = "kate@123.com",
                 };
                 var result = userManager.CreateAsync(user, "123Kate_password");
-                userManager.AddToRoleAsync(user, "user");
-            }
+                var result1 = userManager.AddToRoleAsync(user, "user");
+            }*/
             InitializeDatabase(app);
             app.UseIdentityServer();
             app.UseMvc();

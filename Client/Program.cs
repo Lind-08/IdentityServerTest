@@ -14,8 +14,8 @@ namespace Client
             response.Show();
 
             Console.ReadLine();
-            //await CallServiceAsync(response.AccessToken);
-            await GetVersion(response.AccessToken);
+            await CallServiceAsync(response.AccessToken);
+            //await GetVersion(response.AccessToken);
             Console.ReadLine();
         }
 
@@ -47,8 +47,8 @@ namespace Client
                 ClientId = "ro.client_with_identity",
                 ClientSecret = "another_secret",
                 Scope = "ThinClientApi",
-                UserName = "Kate",
-                Password = "123Kate_password",
+                UserName = "admin@admin.com",
+                Password = "123_Secret"
             });
 
             if (responce.IsError)

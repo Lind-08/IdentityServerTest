@@ -25,7 +25,7 @@ namespace IdentityServer
         {
             return new List<ApiResource>
             {
-                new ApiResource("ThinClientApi", "ThinClientApi")
+                new ApiResource("ThinClientApi", "ThinClientApi", new[] { "domain" })
             };
         }
 
@@ -59,6 +59,9 @@ namespace IdentityServer
                 {
                     ClientId = "ro.client_with_identity",
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPasswordAndClientCredentials,
+
+                    AlwaysSendClientClaims = true,
+                    AlwaysIncludeUserClaimsInIdToken = true,
 
                     ClientSecrets =
                     {

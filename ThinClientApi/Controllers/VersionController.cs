@@ -34,7 +34,8 @@ namespace ThinClientApi.Controllers
                 responce = new Dictionary<string, string>
                 {
                     { "LastVersion", lastFile.Version },
-                    { "Reference", lastFile.FileName }
+                    { "Reference", lastFile.FileName },
+                    { "Checksum", lastFile.Checksum }
                 };
             }
             else

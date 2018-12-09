@@ -10,6 +10,7 @@ namespace ThinClientApi.Models
         public string Id { get; set; }
         public string Version { get; set; }
         public string FileName { get; set; }
+        public string Checksum { get; set; }
 
         internal bool CheckVersion(string version)
         {

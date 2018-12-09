@@ -6,6 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\ApplicationDb\20181209201244_AddingDomainIntoClaims.cs" />
+    <Compile Remove="Migrations\ApplicationDb\20181209201244_AddingDomainIntoClaims.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
