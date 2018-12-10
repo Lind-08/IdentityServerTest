@@ -9,7 +9,7 @@ namespace IdentityServer.Data
 {
     public class RoleInitializer
     {
-        public static async Task InitializeAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, Domain domain)
+        public static async Task InitializeAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, string domain)
         {
             string adminEmail = "admin@admin.com";
             string password = "123_Secret";
@@ -28,7 +28,7 @@ namespace IdentityServer.Data
                 if (result.Succeeded)
                 {
                     await userManager.AddToRoleAsync(admin, "admin");
-                    await userManager.AddClaimAsync(admin, new System.Security.Claims.Claim("domain", admin.Domain.Address));
+                    await userManager.AddClaimAsync(admin, new System.Security.Claims.Claim("domain", admin.Domain));
                 }
             }
         }

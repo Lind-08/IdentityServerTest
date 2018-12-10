@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace IdentityServer.Models
+namespace ThinClientApi.Models
 {
     public class Domain
     {
         public string Id { get; set; }
+        public string Name  { get; set; } 
         public string Description { get; set; }
-        public string Address { get; set; } 
-        public ICollection<RdpEndpoints> RdpEndpoints { get; set; }
+        public ICollection<RdpEndpoint> RdpEndpoints { get; set; }
     }
 }

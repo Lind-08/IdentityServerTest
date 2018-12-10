@@ -8,9 +8,9 @@ using ThinClientApi.Models;
 
 namespace ThinClientApi.Data
 {
-    public class ClientFileDbContext : DbContext
+    public class ApplicationDbContext : DbContext
     {
-        public ClientFileDbContext(DbContextOptions<ClientFileDbContext> options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
         {
 
@@ -18,15 +18,11 @@ namespace ThinClientApi.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<ClientFile>().HasData(new ClientFile
-            {
-                Version = "1.2",
-                FileName = "some_file.exe",
-                Checksum = "CC1AB435A408325E9E08ADA9798C8B1D"
-            });
             base.OnModelCreating(builder);
         }
 
         public DbSet<ClientFile> ClientFiles { get; set; }
+        public DbSet<Domain> Domains { get; set; }
+        public DbSet<RdpEndpoint> RdpEndpoints { get; set; }
     }
 }

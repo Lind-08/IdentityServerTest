@@ -79,15 +79,9 @@ namespace IdentityServer
                 var services = serviceScope.ServiceProvider;
                 var userContext = services.GetRequiredService<ApplicationDbContext>();
                 userContext.Database.Migrate();
-                var domain = new Domain { Address = "WORKGROUP", Description = "Home domain" };
-                if (!userContext.Domains.Any())
-                {
-                    userContext.Domains.Add(domain);
-                    userContext.SaveChanges();
-                }
                 var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
                 var rolesManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-                await RoleInitializer.InitializeAsync(userManager, rolesManager, domain);
+                await RoleInitializer.InitializeAsync(userManager, rolesManager, "WORKGROUP");
                 /*
                 services.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
 

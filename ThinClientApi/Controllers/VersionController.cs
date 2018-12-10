@@ -16,18 +16,18 @@ namespace ThinClientApi.Controllers
     [Authorize]
     public class VersionController : ControllerBase
     {
-        public ClientFileDbContext ClientFilesDb { get; set; } 
+        public ApplicationDbContext dbContext { get; set; } 
 
-        public VersionController(ClientFileDbContext clientFileDbContext)
+        public VersionController(ApplicationDbContext applicationDbContext)
         {
-            ClientFilesDb = clientFileDbContext;
+            dbContext = applicationDbContext;
         }
 
         // GET /version
         [HttpGet("{version}", Name = "Check")]
         public IActionResult CheckVersion(string version)
         {
-            var lastFile = ClientFilesDb.ClientFiles.Last();
+            var lastFile = dbContext.ClientFiles.Last();
             Dictionary<string, string> responce;
             if (!lastFile.CheckVersion(version))
             {

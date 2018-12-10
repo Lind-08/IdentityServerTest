@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using ThinClientApi.Data;
+using ThinClientApi.Models;
 
 namespace ThinClientApi.Controllers
 {
@@ -13,29 +17,33 @@ namespace ThinClientApi.Controllers
     [Authorize]
     public class ConnectionController : ControllerBase
     {
+        ApplicationDbContext DbContext { get; set; }
+        public ConnectionController(ApplicationDbContext applicationDbContext)
+        {
+            DbContext = applicationDbContext;
+        }
         // GET: /Connection
-        [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
+        [HttpGet]
+        public IActionResult Get()
         {
-            return "value";
-        }
-
-        // POST: api/Connection
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT: api/Connection/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            var domainName = (from c in User.Claims where c.Type == "domain" select c.Value).FirstOrDefault();
+            if (domainName != null)
+            {
+                var domains = DbContext.Domains.Include(t => t.RdpEndpoints).ToList();
+                var domain = domains.Where(c => c.Name == domainName).FirstOrDefault();
+                if (domain != null)
+                {
+                    return new JsonResult(domain.RdpEndpoints);
+                }
+                else
+                {
+                    return new JsonResult(new Dictionary<string, string> { { "Error", "Domain not found" } });
+                }
+            }
+            else
+            {
+                return new JsonResult(new Dictionary<string, string> { { "Error", "Domain not founded in token" } });
+            }
         }
     }
 }

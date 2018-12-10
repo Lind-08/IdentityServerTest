@@ -8,6 +8,6 @@ namespace IdentityServer.Models
 {
     public class ApplicationUser : IdentityUser
     {
-       public Domain Domain { get; set; }
+       public string Domain { get; set; }
     }
 }

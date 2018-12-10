@@ -14,9 +14,24 @@ namespace Client
             response.Show();
 
             Console.ReadLine();
-            await CallServiceAsync(response.AccessToken);
+            //await CallServiceAsync(response.AccessToken);
             //await GetVersion(response.AccessToken);
+            await GetConnectionData(response.AccessToken);
             Console.ReadLine();
+        }
+
+        static async Task GetConnectionData(string token)
+        {
+            var baseAddress = "http://localhost:5001";
+            var client = new HttpClient
+            {
+                BaseAddress = new Uri(baseAddress)
+            };
+
+            client.SetBearerToken(token);
+            var responce = await client.GetStringAsync("connection");
+            "\n\nResponce:".ConsoleGreen();
+            Console.WriteLine(JArray.Parse(responce));
         }
 
         static async Task GetVersion(string token)
