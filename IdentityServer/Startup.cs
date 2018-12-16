@@ -33,9 +33,9 @@ namespace IdentityServer
         {
             services.AddMvcCore();
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-#if DEBUG
+#if (DEBUG)
             var ConnectionString = "Data Source=LIND-PC;Initial Catalog=ThinClientApi;Integrated Security=True";
-#elif RELEASE
+#else
             var ConnectionString = Configuration.GetConnectionString("DefaultConnection");
 #endif
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -50,11 +50,11 @@ namespace IdentityServer
             services.AddIdentityServer()
                 .AddDeveloperSigningCredential()
                 //.AddTestUsers(IdentityConfig.GetUsers())
-                .AddInMemoryClients(IdentityConfig.GetClients())
-                .AddInMemoryApiResources(IdentityConfig.GetApiResources())
+                //.AddInMemoryClients(IdentityConfig.GetClients())
+                //.AddInMemoryApiResources(IdentityConfig.GetApiResources())
                 .AddAspNetIdentity<ApplicationUser>()
-                .AddInMemoryIdentityResources(IdentityConfig.GetIdentityResources());
-                /*.AddConfigurationStore(options =>
+                //.AddInMemoryIdentityResources(IdentityConfig.GetIdentityResources());
+                .AddConfigurationStore(options =>
                 {
                     options.ConfigureDbContext = builder =>
                         builder.UseSqlServer(ConnectionString,
@@ -64,11 +64,12 @@ namespace IdentityServer
                 {
                     options.ConfigureDbContext = builder =>
                     {
-                        builder.UseSqlServer(ConnectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
+                        builder.UseSqlServer(ConnectionString, 
+                            sql => sql.MigrationsAssembly(migrationsAssembly));
                     };
                     options.EnableTokenCleanup = true;
                     options.TokenCleanupInterval = 30;
-                });*/
+                });
                 
         }
 
@@ -82,7 +83,7 @@ namespace IdentityServer
                 var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
                 var rolesManager = services.GetRequiredService<RoleManager<IdentityRole>>();
                 await RoleInitializer.InitializeAsync(userManager, rolesManager, "WORKGROUP");
-                /*
+                
                 services.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
 
                 var context = services.GetRequiredService<ConfigurationDbContext>();
@@ -112,35 +113,17 @@ namespace IdentityServer
                         context.ApiResources.Add(resource.ToEntity());
                     }
                     context.SaveChanges();
-                }*/
+                }
             }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-            /*if (!roleManager.Roles.Any())
-            {
-                IdentityRole role = new IdentityRole
-                {
-                    Name = "user"
-                };
-                var result = roleManager.CreateAsync(role);
-            }
-            if (!userManager.Users.Any())
-            {
-                ApplicationUser user = new ApplicationUser
-                {
-                    UserName = "Kate",
-                    Email = "kate@123.com",
-                };
-                var result = userManager.CreateAsync(user, "123Kate_password");
-                var result1 = userManager.AddToRoleAsync(user, "user");
-            }*/
             InitializeDatabase(app);
             app.UseIdentityServer();
             app.UseMvc();

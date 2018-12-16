@@ -31,9 +31,9 @@ namespace ThinClientApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-#if DEBUG
+#if (DEBUG)
             var connectionString = "Data Source=LIND-PC;Initial Catalog=ThinClientApi;Integrated Security=True";
-#elif RELEASE
+#else
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
 #endif
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -74,6 +74,7 @@ namespace ThinClientApi
                         FileName = "some_file.exe",
                         Checksum = "CC1AB435A408325E9E08ADA9798C8B1D"
                     };
+                    context.ClientFiles.Add(clientFile);
                     context.SaveChanges();
                 }
                 if (!context.RdpEndpoints.Any())
