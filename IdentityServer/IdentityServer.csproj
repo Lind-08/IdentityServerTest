@@ -14,14 +14,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\**" />
+    <Content Remove="wwwroot\**" />
+    <EmbeddedResource Remove="wwwroot\**" />
+    <None Remove="wwwroot\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Migrations\ApplicationDb\20181209201244_AddingDomainIntoClaims.cs" />
     <Compile Remove="Migrations\ApplicationDb\20181209201244_AddingDomainIntoClaims.Designer.cs" />
     <Compile Remove="Migrations\ApplicationDb\20181210181629_DeletingDomain.cs" />
     <Compile Remove="Migrations\ApplicationDb\20181210181629_DeletingDomain.Designer.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -10,8 +10,9 @@ namespace ThinClientApi.Models
     public class Domain
     {
         public string Id { get; set; }
-        public string Name  { get; set; } 
+        public string Name { get; set; }
         public string Description { get; set; }
         public ICollection<RdpEndpoint> RdpEndpoints { get; set; }
+        public ICollection<FtpEndpoint> FtpEndpoints { get; set; }
     }
 }

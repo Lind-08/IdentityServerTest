@@ -6,8 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Utilities\" />
-    <Folder Include="wwwroot\" />
+    <Compile Remove="Utilities\**" />
+    <Compile Remove="wwwroot\**" />
+    <Content Remove="Utilities\**" />
+    <Content Remove="wwwroot\**" />
+    <EmbeddedResource Remove="Utilities\**" />
+    <EmbeddedResource Remove="wwwroot\**" />
+    <None Remove="Utilities\**" />
+    <None Remove="wwwroot\**" />
   </ItemGroup>
 
   <ItemGroup>
