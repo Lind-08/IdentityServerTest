@@ -24,5 +24,6 @@ namespace ThinClientApi.Data
         public DbSet<ClientFile> ClientFiles { get; set; }
         public DbSet<Domain> Domains { get; set; }
         public DbSet<RdpEndpoint> RdpEndpoints { get; set; }
+        public DbSet<FtpServerEndpoint> FtpServerEndpoints { get; set; }
     }
 }

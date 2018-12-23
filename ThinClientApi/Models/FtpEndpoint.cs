@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ThinClientApi.Models
 {
-    public class FtpEndpoint
+    public class FtpServerEndpoint
     {
         public string Id { get; set; }
         public string Address { get; set; }

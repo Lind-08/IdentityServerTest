@@ -57,7 +57,7 @@ namespace Client
 
         static async Task GetVersion(string token)
         {
-            var baseAddress = "http://83.217.24.133:21151";
+            var baseAddress = "http://83.217.24.133:21150";
             var client = GetHttpClient(baseAddress);
             client.SetBearerToken(token);
             var responce = await client.GetStringAsync("version/check?version=0.9");
@@ -67,10 +67,10 @@ namespace Client
 
         static async Task<TokenResponse> RequestTokenAsync()
         {
-            var client = GetHttpClient("http://83.217.24.133:21150");
+            var client = GetHttpClient("http://79.137.221.35:21150");
             var disco = await client.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest
             {
-                Address = "http://83.217.24.133:21150",
+                Address = "http://79.137.221.35:21150",
                 Policy =
                 {
                     RequireHttps = false
@@ -99,7 +99,7 @@ namespace Client
 
         static async Task CallServiceAsync(string token)
         {
-            var baseAddress = "http://83.217.24.133:21151";
+            var baseAddress = "https://83.217.24.133:5001";
             var client = GetHttpClient(baseAddress);
             client.SetBearerToken(token);
             var responce = await client.GetStringAsync("identity");

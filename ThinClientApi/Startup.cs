@@ -85,23 +85,37 @@ namespace ThinClientApi
                         Port = 123,
                     };
                     context.RdpEndpoints.Add(rdpEndpoint);
+                    FtpServerEndpoint ftpEndpoint = new FtpServerEndpoint
+                    {
+                        Address = "1.1.1.1",
+                        Port = 321
+                    };
+                    context.FtpServerEndpoints.Add(ftpEndpoint);
                     RdpEndpoint rdpEndpoint1 = new RdpEndpoint
                     {
                         Address = "2.2.2.2",
                         Port = 321,
                     };
                     context.RdpEndpoints.Add(rdpEndpoint1);
+                    FtpServerEndpoint ftpEndpoint1 = new FtpServerEndpoint
+                    {
+                        Address = "2.2.2.2",
+                        Port = 321
+                    };
+                    context.FtpServerEndpoints.Add(ftpEndpoint1);
                     Domain domain1 = new Domain
                     {
                         Name = "PRO-SAAS",
                         Description = "PRO-SAAS",
-                        RdpEndpoints = new[] { rdpEndpoint }
+                        RdpEndpoints = new[] { rdpEndpoint },
+                        FtpEndpoints = new[] { ftpEndpoint }
                     };
                     Domain domain2 = new Domain
                     {
                         Name = "SAAS",
                         Description = "SAAS",
-                        RdpEndpoints = new[] { rdpEndpoint1 }
+                        RdpEndpoints = new[] { rdpEndpoint1 },
+                        FtpEndpoints = new[] { ftpEndpoint1 }
                     };
                     context.Domains.Add(domain1);
                     context.Domains.Add(domain2);
@@ -118,6 +132,8 @@ namespace ThinClientApi
             {
                 app.UseDeveloperExceptionPage();
             }
+            loggerFactory.AddEventSourceLogger();
+            loggerFactory.AddDebug();
             InitializeDatabase(app);
             app.UseAuthentication();
             app.UseMvc();
