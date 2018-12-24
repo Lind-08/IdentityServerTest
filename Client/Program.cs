@@ -13,20 +13,15 @@ namespace Client
     {
         static async Task Main(string[] args)
         {
+            string IdentityAddress = "https://79.137.221.35:21150";
+            string ApiAddress = "https://83.217.24.133:21150";
             try
             {
-                ServicePointManager.ServerCertificateValidationCallback +=
-                delegate (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
-                {
-                    return true;
-                };
-                var response = await RequestTokenAsync();
+                var response = await RequestTokenAsync(IdentityAddress);
                 response.Show();
-
                 Console.ReadLine();
-                //await CallServiceAsync(response.AccessToken);
-                await GetVersion(response.AccessToken);
-                await GetConnectionData(response.AccessToken);
+                await GetVersion(response.AccessToken, ApiAddress);
+                await GetConnectionData(response.AccessToken, ApiAddress);
                 Console.ReadLine();
             }
             catch (Exception e)
@@ -36,75 +31,67 @@ namespace Client
             }
         }
 
-        static HttpClient GetHttpClient(string address)
+        static HttpClient GetHttpClient(string address, HttpClientHandler handler)
         {
-            var client = new HttpClient();
+            var client = new HttpClient(handler);
             client.BaseAddress = new Uri( address);
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
             return client;
         }
 
-        static async Task GetConnectionData(string token)
+        static async Task GetConnectionData(string token, string address)
         {
-            var baseAddress = "http://83.217.24.133:21150";
-            var client = GetHttpClient(baseAddress);
-            client.SetBearerToken(token);
-            var responce = await client.GetStringAsync("connection");
-            "\n\nResponce:".ConsoleGreen();
-            Console.WriteLine(JArray.Parse(responce));
-        }
-
-        static async Task GetVersion(string token)
-        {
-            var baseAddress = "http://83.217.24.133:21150";
-            var client = GetHttpClient(baseAddress);
-            client.SetBearerToken(token);
-            var responce = await client.GetStringAsync("version/check?version=0.9");
-            "\n\nResponce:".ConsoleGreen();
-            Console.WriteLine(JObject.Parse(responce));
-        }
-
-        static async Task<TokenResponse> RequestTokenAsync()
-        {
-            var client = GetHttpClient("http://79.137.221.35:21150");
-            var disco = await client.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest
+            using (var handler = new HttpClientHandler())
             {
-                Address = "http://79.137.221.35:21150",
-                Policy =
+                handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
+                var client = GetHttpClient(address, handler);
+                client.SetBearerToken(token);
+                var responce = await client.GetStringAsync("connection");
+                "\n\nResponce:".ConsoleGreen();
+                Console.WriteLine(JObject.Parse(responce));
+            }
+        }
+
+        static async Task GetVersion(string token, string address)
+        {
+            using (var handler = new HttpClientHandler())
+            {
+                handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
+                var client = GetHttpClient(address, handler);
+                client.SetBearerToken(token);
+                var responce = await client.GetStringAsync("version/check?version=0.9");
+                "\n\nResponce:".ConsoleGreen();
+                Console.WriteLine(JObject.Parse(responce));
+            }
+        }
+
+        static async Task<TokenResponse> RequestTokenAsync(string address)
+        {
+            using (var handler = new HttpClientHandler())
+            {
+                handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
+                var client = GetHttpClient(address, handler);
+                var disco = await client.GetDiscoveryDocumentAsync(address);
+                if (disco.IsError)
                 {
-                    RequireHttps = false
+                    throw new Exception(disco.Error);
                 }
-            });
-            if (disco.IsError)
-            {
-                throw new Exception(disco.Error);
+                var responce = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
+                {
+                    Address = disco.TokenEndpoint,
+                    ClientId = "ro.client_with_identity",
+                    ClientSecret = "another_secret",
+                    Scope = "ThinClientApi",
+                    UserName = "admin@admin.com",
+                    Password = "123_Secret"
+                });
+                if (responce.IsError)
+                {
+                    throw new Exception(responce.Error);
+                }
+                return responce;
             }
-            var responce = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
-            {
-                Address = disco.TokenEndpoint,
-                ClientId = "ro.client_with_identity",
-                ClientSecret = "another_secret",
-                Scope = "ThinClientApi",
-                UserName = "admin@admin.com",
-                Password = "123_Secret"
-            });
-
-            if (responce.IsError)
-            {
-                throw new Exception(responce.Error);
-            }
-            return responce;
-        }
-
-        static async Task CallServiceAsync(string token)
-        {
-            var baseAddress = "https://83.217.24.133:5001";
-            var client = GetHttpClient(baseAddress);
-            client.SetBearerToken(token);
-            var responce = await client.GetStringAsync("identity");
-            "\n\nService claims:".ConsoleGreen();
-            Console.WriteLine(JArray.Parse(responce));
         }
     }
 }
