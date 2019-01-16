@@ -17,6 +17,18 @@ namespace ThinClientApi.Controllers
     [Authorize]
     public class ConnectionController : ControllerBase
     {
+        private class GetConnectionResponce
+        {
+            public ICollection<RdpEndpoint> RdpEndpoints;
+            public ICollection<FtpServerEndpoint> FtpEndpoints;
+
+            public GetConnectionResponce(Domain domain)
+            {
+                RdpEndpoints = domain.RdpEndpoints;
+                FtpEndpoints = domain.FtpEndpoints;
+            }
+        }
+
         ApplicationDbContext DbContext { get; set; }
         public ConnectionController(ApplicationDbContext applicationDbContext)
         {
@@ -29,11 +41,11 @@ namespace ThinClientApi.Controllers
             var domainName = (from c in User.Claims where c.Type == "domain" select c.Value).FirstOrDefault();
             if (domainName != null)
             {
-                var domains = DbContext.Domains.Include(t => t.RdpEndpoints).ToList();
+                var domains = DbContext.Domains.Include(t => t.RdpEndpoints ).Include(t => t.FtpEndpoints).ToList();
                 var domain = domains.Where(c => c.Name == domainName).FirstOrDefault();
                 if (domain != null)
                 {
-                    return new JsonResult(domain.RdpEndpoints);
+                    return new JsonResult(new GetConnectionResponce(domain));
                 }
                 else
                 {
